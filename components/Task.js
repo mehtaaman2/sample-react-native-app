@@ -20,7 +20,7 @@ const TaskView = (props) => {
   return (
   <View style={styles.container}>
     <Text >Task Name : {props.task.name} </Text>
-    <Text >Time : {props.task.time} </Text>
+    <Text >Time : {props.task.time && props.task.time.toLocaleTimeString().slice(0,5)} </Text>
   </View>
 );
 }

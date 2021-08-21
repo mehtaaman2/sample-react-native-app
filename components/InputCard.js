@@ -2,38 +2,50 @@ import React, {useState} from 'react';
 import { TextInput, View, StyleSheet, Button, Text } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Task from '../model/Task';
+import DayPicker from './DayPicker';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
+    flex:1,
+    padding: 5,
     backgroundColor: '#fff',
     alignItems: 'flex-start',
     justifyContent: 'flex-start',
   },
   inputText: {
+    flex: 1,
     padding: 10,
     borderBottomWidth: 1,
   },
   showPickerButton: {
+    flex: 1,
     padding: 20,
     paddingLeft: 20,
   },
+  timeDisplayText: {
+    flex: 1
+  },
   timeView: {
+    flex: 1,
+    paddingTop: 20,
     flexDirection: 'row',
+    justifyContent: 'space-evenly'
+  },
+  dayPicker: {
+    flex: 15,
+    paddingTop: 20,
+    flexWrap: "wrap",
   }
 })
 
 const InputCard = (props) => {
-  const [date, setDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [currentTask, setCurrentTask] = useState(new Task());
 
   const onDateChange = (event, selectedTime) => {
     setShowPicker(false);
     if(event.type === 'set') {
-      setDate(selectedTime);
-      currentTask.time=selectedTime.toLocaleTimeString().slice(0,5);
+      currentTask.time=selectedTime;
       setCurrentTask(currentTask);
       props.setTask(currentTask);
     }
@@ -55,8 +67,11 @@ const InputCard = (props) => {
     <TextInput editable={true} maxlength={100} multiline={false} style={styles.inputText} placeholder="Task Name" maxLength={40}  onChangeText={onChangeText}/>
     <View style={styles.timeView}>
       <Button title="Select time" onPress={onSelectTimePress} style={styles.showPickerButton}/>
-      <Text>{date.toLocaleTimeString().slice(0,5)}</Text>
+      <Text style={styles.timeDisplayText}>{currentTask.time && currentTask.time.toLocaleTimeString().slice(0,5)}</Text>
       {showPicker && (<DateTimePicker mode="time" value={new Date()} onChange={onDateChange} />)}
+    </View>
+    <View style={styles.dayPicker}>
+      <DayPicker/>
     </View>
   </View>
 );
