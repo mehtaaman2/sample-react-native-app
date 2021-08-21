@@ -16,6 +16,7 @@ export default function App() {
   const addTask = () => {
     tasks.push(currentTask);
     setTasks(tasks);
+    setCurrentTask({});
     setShowModal(false);
   }
 
