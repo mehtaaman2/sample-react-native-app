@@ -51,9 +51,14 @@ const InputCard = (props) => {
     }
   }
 
-
   const onChangeText = (text) => {
     currentTask.name = text;
+    setCurrentTask(currentTask);
+    props.setTask(currentTask);
+  }
+
+  const onDayPickerChange = (days) => {
+    currentTask.days = days;
     setCurrentTask(currentTask);
     props.setTask(currentTask);
   }
@@ -71,7 +76,7 @@ const InputCard = (props) => {
       {showPicker && (<DateTimePicker mode="time" value={new Date()} onChange={onDateChange} />)}
     </View>
     <View style={styles.dayPicker}>
-      <DayPicker/>
+      <DayPicker setDays={onDayPickerChange}/>
     </View>
   </View>
 );

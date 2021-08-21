@@ -38,12 +38,13 @@ const styles = StyleSheet.create({
 
 
 const DayPicker = (props) => {
-  const [pressed, setPressed] = useState(new Array(7).fill(false));
+  const [pressed, setPressed] = useState(props.days? props.days : new Array(7).fill(false));
 
  const setOnPress = (i) => {
    console.log(i);
     pressed[i] = !pressed[i];
     setPressed(pressed);
+    props.setDays(pressed);
   }
 
   const getStyleOnButtonPress = (pressed) => {
@@ -56,10 +57,9 @@ const DayPicker = (props) => {
   <View style={styles.container}>
       {
         days.map(function(day, i){
-        console.log(day, i);
-        console.log('Rendered once!');
          return (<View key={i} style={styles.pressableView}>
            <Pressable onPress={setOnPress.bind(this, i)}
+           disabled={props.pressDisabled}
            style={() => getStyleOnButtonPress(pressed[i])}>
              <Text style={styles.textStyle}>{day.label}</Text>
            </Pressable>
