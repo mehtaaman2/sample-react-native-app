@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, Button, TextInput, Modal, Pressable } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Modal, Pressable, ScrollView } from 'react-native';
 import InputCard from './components/InputCard';
 import Task from './model/Task';
 import TaskView from './components/Task';
@@ -35,7 +35,16 @@ export default function App() {
     <View style={styles.container}>
       <Text>Welcome to the App!</Text>
     </View>
-    {taskViews.length != 0 && taskViews}
+    {taskViews.length != 0
+       &&
+      <ScrollView style={styles.scrollView} persistentScrollbar={true}>
+          {tasks.map(function(task, i) {
+            return (<View key = {i} style={styles.taskView}>
+                      <TaskView task={task}/>
+                   </View>)
+          })}
+      </ScrollView>
+    }
     <View>
       <Button style={styles.addAlertButton} title="Add alert" onPress={() => {setShowModal(true);}}/>
     </View>
@@ -46,10 +55,10 @@ export default function App() {
              onRequestClose={handleClose}>
      <InputCard setTask={setCurrentTask}/>
      <View style={styles.buttonsView}>
-       <Pressable style={[styles.button, styles.buttonClose]} onPress={handleClose}>
+       <Pressable style={[styles.button, styles.buttonCancel]} onPress={handleClose}>
              <Text style={styles.textStyle}>Cancel</Text>
        </Pressable>
-       <Pressable style={[styles.button, styles.buttonClose]} onPress={addTask}>
+       <Pressable style={[styles.button, styles.buttonAdd]} onPress={addTask}>
              <Text style={styles.textStyle}>Save task</Text>
        </Pressable>
      </View>
@@ -77,8 +86,12 @@ const styles = StyleSheet.create({
     padding: 10,
     elevation: 2
   },
-  buttonClose: {
+  buttonCancel: {
     flex: 1,
+    backgroundColor: "#FA8072",
+  },
+  buttonAdd: {
+    flex: 2,
     backgroundColor: "#2196F3",
   },
   buttonsView: {
@@ -90,4 +103,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center"
   },
+  scrollView: {
+    marginHorizontal: 10,
+  },
+  taskView: {
+    padding: 5,
+  }
 });
