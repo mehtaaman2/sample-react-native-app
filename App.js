@@ -1,8 +1,9 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, Button, TextInput, Modal, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Modal, Pressable, ScrollView, Image } from 'react-native';
 import InputCard from './components/InputCard';
 import Task from './model/Task';
 import TaskView from './components/Task';
+import { LocalNotification } from './services/LocalPushNotifications'
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
@@ -34,6 +35,9 @@ export default function App() {
     <React.Fragment>
     <View style={styles.container}>
       <Text>Welcome to the App!</Text>
+      <Pressable onPress={() => {LocalNotification()}}>
+        <Image style={{width: 50, height: 50}} source={require('./images/profile-icon.png')}/>
+      </Pressable>
     </View>
     {taskViews.length != 0
        &&
