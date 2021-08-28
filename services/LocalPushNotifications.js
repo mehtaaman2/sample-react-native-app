@@ -1,4 +1,5 @@
 import PushNotification from 'react-native-push-notification'
+import Task from '../model/Task'
 
 PushNotification.createChannel(
     {
@@ -16,6 +17,7 @@ PushNotification.createChannel(
 PushNotification.configure({
   // (required) Called when a remote or local notification is opened or received
   onNotification: function(notification) {
+    console.log('Action: ', notification.action)
     console.log('LOCAL NOTIFICATION ==>', notification)
   },
 
@@ -23,19 +25,21 @@ PushNotification.configure({
   requestPermissions: true
 })
 
-export const LocalNotification = () => {
-  PushNotification.localNotification({
+export const scheduleTaskNotification = (task: Task) => {
+  console.log('Adding notification for task : ', task)
+  PushNotification.localNotificationSchedule({
     autoCancel: true,
     bigText:
-      'This is local notification demo in React Native app. Only shown, when expanded.',
-    subText: 'Local Notification Demo',
-    title: 'Local Notification Title',
-    message: 'Expand me to see more',
+      'This is scheduled notification for task: ' + task.name + '. Task done?',
+    subText: task.name,
+    title: task.name,
+    message: 'Task done?',
     vibrate: true,
     vibration: 300,
     playSound: true,
     soundName: 'default',
     actions: '["Yes", "No"]',
-    channelId: 'channel-id'
+    channelId: 'channel-id',
+    date: task.time
   })
 }

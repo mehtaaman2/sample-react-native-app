@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Button, TextInput, Modal, Pressable, ScrollView
 import InputCard from './components/InputCard';
 import Task from './model/Task';
 import TaskView from './components/Task';
-import { LocalNotification } from './services/LocalPushNotifications'
+import { scheduleTaskNotification } from './services/LocalPushNotifications'
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
@@ -16,6 +16,7 @@ export default function App() {
 
   const addTask = () => {
     tasks.push(currentTask);
+    scheduleTaskNotification(currentTask);
     setTasks(tasks);
     setCurrentTask({});
     setShowModal(false);
@@ -34,8 +35,8 @@ export default function App() {
   return (
     <React.Fragment>
     <View style={styles.container}>
-      <Text>Welcome to the App!</Text>
-      <Pressable onPress={() => {LocalNotification()}}>
+      <Text style={{flex:6}}>Welcome to the App!</Text>
+      <Pressable style={{flex:1}} onPress={() => console.log("Yet to implement profiles!")}>
         <Image style={{width: 50, height: 50}} source={require('./images/profile-icon.png')}/>
       </Pressable>
     </View>
@@ -74,10 +75,11 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 40,
+    padding: 10,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    justifyContent: 'space-evenly',
+    flexDirection: 'row',
   },
   addAlertButton: {
     flex: 1,
