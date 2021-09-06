@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, Button, TextInput, Modal, Pressable, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, ToastAndroid, Modal, Pressable, ScrollView, Image } from 'react-native';
 import InputCard from './components/InputCard';
 import Task from './model/Task';
 import TaskView from './components/Task';
-import { scheduleTaskNotification } from './services/LocalPushNotifications'
+import { scheduleTaskNotification } from './services/LocalPushNotifications';
+import DeviceInfo from 'react-native-device-info';
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
@@ -32,11 +33,15 @@ export default function App() {
     )
   }
 
+  const viewDeviceInfo = () => {
+    DeviceInfo.getAndroidId().then((data) => ToastAndroid.show("User id is : " + data, ToastAndroid.SHORT));
+  }
+
   return (
     <React.Fragment>
     <View style={styles.container}>
       <Text style={{flex:6}}>Welcome to the App!</Text>
-      <Pressable style={{flex:1}} onPress={() => console.log("Yet to implement profiles!")}>
+      <Pressable style={{flex:1}} onPress={viewDeviceInfo}>
         <Image style={{width: 50, height: 50}} source={require('./images/profile-icon.png')}/>
       </Pressable>
     </View>
