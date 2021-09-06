@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import DayPicker from './DayPicker';
+import Task from '../model/Task';
 
 const styles = StyleSheet.create({
   container: {
@@ -15,14 +16,17 @@ const styles = StyleSheet.create({
   }
 })
 
-const TaskView = (props) => {
-  console.log("props received");
-  console.log(props);
+export interface TaskProps {
+  task: Task;
+}
+
+const TaskView: React.FC<TaskProps> = ({task}) => {
+  console.log(task);
   return (
   <View style={styles.container}>
-    <Text >Task Name : {props.task.name} </Text>
-    <Text >Time : {props.task.time && props.task.time.toLocaleTimeString().slice(0,5)} </Text>
-    <DayPicker days={props.task && props.task.days} pressDisabled={true}/>
+    <Text >Task Name : {task.name} </Text>
+    <Text >Time : {task.time && task.time.toLocaleTimeString().slice(0,5)} </Text>
+    <DayPicker daysSelected={task && task.days} pressDisabled={true}/>
   </View>
 );
 }

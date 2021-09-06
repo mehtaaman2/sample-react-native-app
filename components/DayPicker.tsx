@@ -1,14 +1,18 @@
-import React, {useState} from 'react';
+import React, {Children, useState} from 'react';
 import { View, StyleSheet, Text, Pressable } from 'react-native';
 
-const days = [
-  { 'label': 'Sunday', value: '0' },
-  { 'label': 'Monday', value: '1' },
-  { 'label': 'Tuesday', value: '2' },
-  { 'label': 'Wednesday', value: '3' },
-  { 'label': 'Thursday', value: '4' },
-  { 'label': 'Friday', value: '5' },
-  { 'label': 'Saturday', value: '6' },
+export interface Day {
+  label: string;
+  value: string;
+}
+const days: Day[] = [
+  { label: 'Sunday', value: '0' },
+  { label: 'Monday', value: '1' },
+  { label: 'Tuesday', value: '2' },
+  { label: 'Wednesday', value: '3' },
+  { label: 'Thursday', value: '4' },
+  { label: 'Friday', value: '5' },
+  { label: 'Saturday', value: '6' },
 ]
 
 const styles = StyleSheet.create({
@@ -36,18 +40,25 @@ const styles = StyleSheet.create({
   },
 })
 
+export type DayPickerProps = {
+  daysSelected?: boolean[];
+  pressDisabled?: boolean;
+  setDays?(pressed: boolean[]): void;
+}
 
-const DayPicker = (props) => {
-  const [pressed, setPressed] = useState(props.days? props.days : new Array(7).fill(false));
+const DayPicker: React.FC<DayPickerProps> = ({daysSelected, pressDisabled, setDays}) => {
+  const [pressed, setPressed] = useState(daysSelected ? daysSelected : new Array(7).fill(false));
 
- const setOnPress = (i) => {
+ const setOnPress = (i: any) => {
    console.log(i);
     pressed[i] = !pressed[i];
     setPressed(pressed);
-    props.setDays(pressed);
+    if(setDays) {
+      setDays(pressed);
+    }
   }
 
-  const getStyleOnButtonPress = (pressed) => {
+  const getStyleOnButtonPress = (pressed: boolean[]) => {
     return [{
       backgroundColor: (pressed ? '#ADD8E6' : 'white')
     }, styles.pressable];
@@ -58,8 +69,8 @@ const DayPicker = (props) => {
       {
         days.map(function(day, i){
          return (<View key={i} style={styles.pressableView}>
-           <Pressable onPress={setOnPress.bind(this, i)}
-           disabled={props.pressDisabled}
+           <Pressable onPress={event => setOnPress(i)}
+           disabled={pressDisabled}
            style={() => getStyleOnButtonPress(pressed[i])}>
              <Text style={styles.textStyle}>{day.label}</Text>
            </Pressable>

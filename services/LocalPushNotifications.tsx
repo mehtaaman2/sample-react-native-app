@@ -1,4 +1,4 @@
-import PushNotification from 'react-native-push-notification'
+import PushNotification, {ReceivedNotification} from 'react-native-push-notification'
 import Task from '../model/Task'
 
 PushNotification.createChannel(
@@ -11,12 +11,12 @@ PushNotification.createChannel(
       importance: 4, // (optional) default: 4. Int value of the Android notification importance
       vibrate: true, // (optional) default: true. Creates the default vibration patten if true.
     },
-    (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+    (created: boolean) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
   );
 
 PushNotification.configure({
   // (required) Called when a remote or local notification is opened or received
-  onNotification: function(notification) {
+  onNotification: function(notification: Omit<ReceivedNotification, 'userInfo'>) {
     console.log('Action: ', notification.action)
     console.log('LOCAL NOTIFICATION ==>', notification)
   },
@@ -38,7 +38,7 @@ export const scheduleTaskNotification = (task: Task) => {
     vibration: 300,
     playSound: true,
     soundName: 'default',
-    actions: '["Yes", "No"]',
+    actions: ["Yes", "No"],
     channelId: 'channel-id',
     date: task.time
   })

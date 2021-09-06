@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { TextInput, View, StyleSheet, Pressable, Text } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { AndroidEvent } from '@react-native-community/datetimepicker';
 import Task from '../model/Task';
 import DayPicker from './DayPicker';
 
@@ -22,7 +22,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     elevation: 2,
     backgroundColor: '#2196F3',
-    flex: 1,
     padding:10,
   },
   timeDisplayText: {
@@ -39,29 +38,35 @@ const styles = StyleSheet.create({
   }
 })
 
-const InputCard = (props) => {
-  const [showPicker, setShowPicker] = useState(false);
-  const [currentTask, setCurrentTask] = useState(new Task());
+export interface InputCardProps {
+  setTask(task: Task): void;
+}
 
-  const onDateChange = (event, selectedTime) => {
+const InputCard: React.FC<InputCardProps> = ({setTask}) => {
+  const [showPicker, setShowPicker] = useState(false);
+  const [currentTask, setCurrentTask] = useState<Task>(new Task());
+
+  const onDateChange = (event: AndroidEvent, selectedTime?: Date) => {
     if(event.type === 'set') {
-      currentTask.time=selectedTime;
+      if(selectedTime) {
+        currentTask.time=selectedTime;
+      }
       setCurrentTask(currentTask);
-      props.setTask(currentTask);
+      setTask(currentTask);
     }
     setShowPicker(false);
   }
 
-  const onChangeText = (text) => {
+  const onChangeText = (text: string) => {
     currentTask.name = text;
     setCurrentTask(currentTask);
-    props.setTask(currentTask);
+    setTask(currentTask);
   }
 
-  const onDayPickerChange = (days) => {
+  const onDayPickerChange = (days: boolean[]) => {
     currentTask.days = days;
     setCurrentTask(currentTask);
-    props.setTask(currentTask);
+    setTask(currentTask);
   }
 
   const onSelectTimePress = () => {
@@ -71,7 +76,7 @@ const InputCard = (props) => {
   return (
   <View style={styles.container}>
     <View style={{flex: 1, flexDirection:'row', flexWrap: 'wrap'}}>
-      <TextInput editable={true} maxlength={100} multiline={false} style={styles.inputText} placeholder="Task Name" maxLength={40}  onChangeText={onChangeText}/>
+      <TextInput editable={true} multiline={false} style={styles.inputText} placeholder="Task Name" maxLength={40}  onChangeText={onChangeText}/>
       <Pressable onPress={onSelectTimePress} style={styles.timePicker}>
         {showPicker && (<DateTimePicker mode="time" value={new Date()} onChange={onDateChange} />)}
         <Text style={styles.timeDisplayText}>{currentTask.time ? currentTask.time.toLocaleTimeString().slice(0,5) : new Date().toLocaleTimeString().slice(0,5)}</Text>

@@ -7,8 +7,8 @@ import { scheduleTaskNotification } from './services/LocalPushNotifications'
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
-  const [tasks, setTasks] = useState([]);
-  const [currentTask, setCurrentTask] = useState(new Task());
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [currentTask, setCurrentTask] = useState<Task>(new Task());
 
   const handleClose = () => {
     setShowModal(false);
@@ -18,7 +18,7 @@ export default function App() {
     tasks.push(currentTask);
     scheduleTaskNotification(currentTask);
     setTasks(tasks);
-    setCurrentTask({});
+    setCurrentTask(new Task());
     setShowModal(false);
   }
 
@@ -50,8 +50,8 @@ export default function App() {
           })}
       </ScrollView>
     }
-    <View>
-      <Button style={styles.addAlertButton} title="Add alert" onPress={() => {setShowModal(true);}}/>
+    <View style={styles.addAlertButton}>
+      <Button title="Add alert" onPress={() => {setShowModal(true);}}/>
     </View>
 
 
@@ -83,9 +83,8 @@ const styles = StyleSheet.create({
   },
   addAlertButton: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'baseline',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    alignContent: 'stretch'
   },
   button: {
     borderRadius: 20,
