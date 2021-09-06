@@ -6,6 +6,12 @@ import TaskView from './components/Task';
 import { scheduleTaskNotification } from './services/LocalPushNotifications';
 import DeviceInfo from 'react-native-device-info';
 
+let userId = '';
+DeviceInfo.getAndroidId().then((androidId) => {
+  userId = androidId;
+  console.log("Screen initialzed with user id : " + userId);
+});
+
 export default function App() {
   const [showModal, setShowModal] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -34,7 +40,7 @@ export default function App() {
   }
 
   const viewDeviceInfo = () => {
-    DeviceInfo.getAndroidId().then((data) => ToastAndroid.show("User id is : " + data, ToastAndroid.SHORT));
+    ToastAndroid.show("User id is : " + userId, ToastAndroid.SHORT)
   }
 
   return (
