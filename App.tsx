@@ -1,10 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, Text, View, Button, ToastAndroid, Modal, Pressable, ScrollView, Image } from 'react-native';
 import InputCard from './components/InputCard';
 import Task from './model/Task';
 import TaskView from './components/Task';
 import { scheduleTaskNotification } from './services/LocalPushNotifications';
 import DeviceInfo from 'react-native-device-info';
+import { saveTask, getAllTasks } from './services/PersistenceService';
+import { AxiosResponse } from 'axios';
 
 let userId = '';
 DeviceInfo.getAndroidId().then((androidId) => {
@@ -17,12 +19,29 @@ export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTask, setCurrentTask] = useState<Task>(new Task());
 
+  async function fetchTasks() {
+    console.log("Fetching info!!");
+    let userId = await DeviceInfo.getAndroidId().then((androidId) => {
+      return androidId;
+    });
+    let response: AxiosResponse<Task[]> = await getAllTasks(userId);
+    let tasks: Task[] = response.data.map((task) => new Task(task));
+    console.log('Response from GET API : ', tasks);
+    setTasks(tasks);
+  }
+
+  useEffect(() => {
+    fetchTasks()
+  }, []);
+
+  
   const handleClose = () => {
     setShowModal(false);
   }
 
   const addTask = () => {
     tasks.push(currentTask);
+    saveTask(userId, currentTask);
     scheduleTaskNotification(currentTask);
     setTasks(tasks);
     setCurrentTask(new Task());
@@ -44,29 +63,26 @@ export default function App() {
   }
 
   return (
-    <React.Fragment>
     <View style={styles.container}>
-      <Text style={{flex:6}}>Welcome to the App!</Text>
-      <Pressable style={{flex:1}} onPress={viewDeviceInfo}>
-        <Image style={{width: 50, height: 50}} source={require('./images/profile-icon.png')}/>
-      </Pressable>
-    </View>
-    {taskViews.length != 0
-       &&
+      <View style={styles.topBanner}>
+        <Text style={{flex:6}}>Welcome to the App!</Text>
+        <Pressable style={{flex:1}} onPress={viewDeviceInfo}>
+          <Image style={{width: 50, height: 50}} source={require('./images/profile-icon.png')}/>
+        </Pressable>
+      </View>
       <ScrollView style={styles.scrollView} persistentScrollbar={true}>
           {tasks.map(function(task, i) {
             return (<View key = {i} style={styles.taskView}>
                       <TaskView task={task}/>
-                   </View>)
+                  </View>)
           })}
       </ScrollView>
-    }
-    <View style={styles.addAlertButton}>
-      <Button title="Add alert" onPress={() => {setShowModal(true);}}/>
-    </View>
+      <View style={styles.addAlertButton}>
+        <Button title="Add alert" onPress={() => {setShowModal(true);}}/>
+      </View>
 
 
-    <Modal visible={showModal}
+      <Modal visible={showModal}
              transparent={false}
              onRequestClose={handleClose}>
      <InputCard setTask={setCurrentTask}/>
@@ -79,13 +95,17 @@ export default function App() {
        </Pressable>
      </View>
     </Modal>
-    </React.Fragment>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+  },
+  topBanner: {
     padding: 10,
     backgroundColor: '#fff',
     alignItems: 'stretch',
@@ -93,7 +113,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   addAlertButton: {
-    flex: 1,
     justifyContent: 'flex-end',
     alignContent: 'stretch'
   },

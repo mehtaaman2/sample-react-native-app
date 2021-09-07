@@ -15,8 +15,7 @@ const styles = StyleSheet.create({
     flex: 1,
   }
 })
-
-export interface TaskProps {
+export interface TaskProps  {
   task: Task;
 }
 
@@ -26,7 +25,7 @@ const TaskView: React.FC<TaskProps> = ({task}) => {
   <View style={styles.container}>
     <Text >Task Name : {task.name} </Text>
     <Text >Time : {task.time && task.time.toLocaleTimeString().slice(0,5)} </Text>
-    <DayPicker daysSelected={task && task.days} pressDisabled={true}/>
+    <DayPicker daysSelected={task && task.daysToRemind} pressDisabled={true}/>
   </View>
 );
 }

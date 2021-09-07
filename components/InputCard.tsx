@@ -64,7 +64,7 @@ const InputCard: React.FC<InputCardProps> = ({setTask}) => {
   }
 
   const onDayPickerChange = (days: boolean[]) => {
-    currentTask.days = days;
+    currentTask.daysToRemind = days;
     setCurrentTask(currentTask);
     setTask(currentTask);
   }
