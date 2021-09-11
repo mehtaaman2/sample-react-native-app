@@ -3,16 +3,14 @@ import { StyleSheet, Text, View, Button, ToastAndroid, Modal, Pressable, ScrollV
 import InputCard from './components/InputCard';
 import Task from './model/Task';
 import TaskView from './components/Task';
-import { scheduleTaskNotification } from './services/LocalPushNotifications';
 import DeviceInfo from 'react-native-device-info';
-import { saveTask, getAllTasks } from './services/PersistenceService';
+import { saveTask, getAllTasks, upsertUser, getAllUsers } from './services/PersistenceService';
 import { AxiosResponse } from 'axios';
+import './services/PushNotifications'
+import User from './model/User';
+import { updateUser } from './services/PushNotifications';
 
-let userId = '';
-DeviceInfo.getAndroidId().then((androidId) => {
-  userId = androidId;
-  console.log("Screen initialzed with user id : " + userId);
-});
+let user = new User()
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
@@ -20,8 +18,23 @@ export default function App() {
   const [currentTask, setCurrentTask] = useState<Task>(new Task());
   const [loading, setLoading] = useState(true);
 
+  async function initializeScreen() {
+    console.log("Initializing the screen!");
+    await initializeUser()
+    await fetchTasks()
+  }
+
+  async function initializeUser() {
+    console.log("Fetching user info!!");
+    setLoading(true);
+    user.userId = await DeviceInfo.getAndroidId().then((androidId) => androidId);
+    user.deviceName = await DeviceInfo.getDeviceName().then((name) => name);
+    console.log("Initialized user : ", user);
+    updateUser(user);
+  }
+
   async function fetchTasks() {
-    console.log("Fetching info!!");
+    console.log("Fetching all tasks!!");
     setLoading(true);
     let userId = await DeviceInfo.getAndroidId().then((androidId) => {
       return androidId;
@@ -34,7 +47,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    fetchTasks()
+    initializeScreen()
   }, []);
 
   
@@ -44,8 +57,7 @@ export default function App() {
 
   const addTask = () => {
     tasks.push(currentTask);
-    saveTask(userId, currentTask);
-    scheduleTaskNotification(currentTask);
+    saveTask(user.userId, currentTask);
     setTasks(tasks);
     setCurrentTask(new Task());
     setShowModal(false);
@@ -61,15 +73,17 @@ export default function App() {
     )
   }
 
-  const viewDeviceInfo = () => {
-    ToastAndroid.show("User id is : " + userId, ToastAndroid.SHORT)
+  async function viewProfile() {
+    let response = await getAllUsers();
+    console.log(response.data);
+    ToastAndroid.show(`You are : ${user.deviceName} . The following devices are part of the group : ${response.data.map((user) => user.deviceName)}` , ToastAndroid.LONG)
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.topBanner}>
         <Text style={{flex:6}}>Welcome to the App!</Text>
-        <Pressable style={{flex:1}} onPress={viewDeviceInfo}>
+        <Pressable style={{flex:1}} onPress={viewProfile}>
           <Image style={{width: 50, height: 50}} source={require('./images/profile-icon.png')}/>
         </Pressable>
       </View>
@@ -80,6 +94,9 @@ export default function App() {
               <Text>Loading tasks for the user!</Text>
             </View>
            }
+          {!loading &&
+           taskViews.length === 0 && 
+           <Text>No tasks for the day, please add one!</Text>} 
           {!loading && tasks.map(function(task, i) {
             return (<View key = {i} style={styles.taskView}>
                       <TaskView task={task}/>
@@ -105,6 +122,14 @@ export default function App() {
     </Modal>
     </View>
   );
+}
+
+export const getUser = () => {
+  return user;
+}
+
+export const updateUserToken = (token: string) => {
+  user.token = token;
 }
 
 const styles = StyleSheet.create({
