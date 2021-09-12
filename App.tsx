@@ -6,9 +6,9 @@ import TaskView from './components/Task';
 import DeviceInfo from 'react-native-device-info';
 import { saveTask, getAllTasks, upsertUser, getAllUsers } from './services/PersistenceService';
 import { AxiosResponse } from 'axios';
-import './services/PushNotifications'
+import './services/PushNotificationService'
 import User from './model/User';
-import { updateUser } from './services/PushNotifications';
+import { updateUser } from './services/PushNotificationService';
 
 let user = new User()
 
